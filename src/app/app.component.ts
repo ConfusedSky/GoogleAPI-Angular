@@ -17,7 +17,6 @@ const baseTitle : string = 'google'
 })
 export class AppComponent implements OnInit {
   title : string = baseTitle;
-  initialized : boolean = false;
   signedIn: boolean = false;
   auth : GoogleAuth = undefined;
 
@@ -67,7 +66,7 @@ export class AppComponent implements OnInit {
   }
 
   handleSignInClick() : void {
-    if(this.initialized)
+    if(this.auth)
     {
       this.auth.signIn();
       this.app.tick();
@@ -86,7 +85,7 @@ export class AppComponent implements OnInit {
   }
 
   handleSignOutClick() : void {
-    if(this.initialized)
+    if(this.auth)
     {
       this.auth.signOut();
       this.signedIn = false;
@@ -98,7 +97,6 @@ export class AppComponent implements OnInit {
     this.gapiAuth.getAuth().subscribe((auth) => 
     {
       this.auth = auth;
-      this.initialized = true;
       this.actualSignIn(auth.isSignedIn.get());
       auth.isSignedIn.listen((val) => this.actualSignIn(val));
       this.app.tick();

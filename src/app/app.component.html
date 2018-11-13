@@ -7,15 +7,15 @@
 <ul [ngSwitch]="signedIn" class="controls">
 
   <li *ngSwitchCase="false">
-    <button [disabled]="!initialized" id="signin-button" (click)="handleSignInClick()">Sign in</button>
+    <button [disabled]="!auth" id="signin-button" (click)="handleSignInClick()">Sign in</button>
   </li>
 
   <div *ngSwitchCase="true">
     <li>
-      <button [disabled]="!initialized" id="signout-button" (click)="handleSignOutClick()">Sign out</button>
+      <button [disabled]="!auth" id="signout-button" (click)="handleSignOutClick()">Sign out</button>
     </li>
     <li>
-      <button [disabled]="!initialized" id="apiCall" (click)="makeApiCall()">API Test</button>
+      <button [disabled]="!auth" id="apiCall" (click)="makeApiCall()">API Test</button>
     </li>
   </div>
 
