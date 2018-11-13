@@ -17,6 +17,7 @@ export class AuthenticationService {
   private name : string = "";
   private email : string = "";
 
+  isInitialized() : boolean { return this.auth !== undefined; }
   isSignedIn() : boolean { return this.signedIn; }
 
   getImg() : string { return this.img; }

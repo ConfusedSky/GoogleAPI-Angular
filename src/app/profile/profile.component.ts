@@ -21,7 +21,7 @@ import { AuthenticationService } from '../authentication.service';
       })),
       state('visible', style({
         //opacity: 1,
-        left: '80%'
+        left: '50%'
       })),
       transition('invisible => visible', [
         animate('.5s')
@@ -47,13 +47,16 @@ export class ProfileComponent implements OnInit {
   ngOnInit() {
     this.auth.getStateChanged().subscribe((value) => {
       if(value){
+        if(this.img == this.auth.getImg())
+        {
+          this.animate = true;
+        }
         this.img = this.auth.getImg();
         this.name = this.auth.getName();
         this.email = this.auth.getEmail();
       }
       else{
         this.animate = false;
-        this.img = ""
       }
     });
   }

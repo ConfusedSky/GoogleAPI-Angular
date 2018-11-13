@@ -4,20 +4,23 @@
     Welcome to {{ title }}!
   </h1>
 </div>
-<ul [ngSwitch]="signedIn" class="controls">
+<ul [ngSwitch]="auth.isSignedIn()" class="controls">
 
   <li *ngSwitchCase="false">
-    <button [disabled]="!auth" id="signin-button" (click)="handleSignInClick()">Sign in</button>
+    <button [disabled]="!auth.isInitialized()" 
+            id="signin-button" 
+            (click)="auth.signIn()">
+      Sign in
+    </button>
   </li>
 
-  <div *ngSwitchCase="true">
-    <li>
-      <button [disabled]="!auth" id="signout-button" (click)="handleSignOutClick()">Sign out</button>
-    </li>
-    <li>
-      <button [disabled]="!auth" id="apiCall" (click)="makeApiCall()">API Test</button>
-    </li>
-  </div>
+  <li *ngSwitchCase="true">
+    <button [disabled]="!auth.isInitialized()" 
+            id="signout-button" 
+            (click)="auth.signOut()">
+      Sign out
+    </button>
+  </li>
 
 </ul>
 
