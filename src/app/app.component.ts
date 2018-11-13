@@ -1,10 +1,9 @@
-import { Component, ApplicationRef } from '@angular/core';
+import { Component, ApplicationRef, NgZone } from '@angular/core';
 import { AuthenticationService } from './authentication.service';
 
 import { HttpClient } from "@angular/common/http";
 
-import { catchError } from "rxjs/operators";
-import { Observable, of } from 'rxjs';
+import { File } from "./file";
 
 @Component({
   selector: 'app-root',
@@ -12,44 +11,59 @@ import { Observable, of } from 'rxjs';
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
-  title : string = "google";
-  files : string[] = [];
-  url = "https://www.googleapis.com/drive/v2/files";
-  batchUrl = "https://www.googleapis.com/batch/drive/v2";
+  files : File[] = [];
 
   constructor(public auth: AuthenticationService,
-              public http: HttpClient,
-              public app: ApplicationRef){
+              private http: HttpClient,
+              private app: ApplicationRef,
+              private zone: NgZone){
     auth.getStateChanged().subscribe((value) => this.generateFiles(value));
     this.generateFiles(this.auth.isSignedIn());
   }
 
   generateFiles(signIn : boolean) : void {
     if(signIn) {
-      this.http.get(`${this.url}/0B0PlDrzQdktcb3BsZDdnOHFTSWc/children?orderBy=modifiedDate`, this.auth.getOptions()).pipe(
-        catchError((err: any) : Observable<any> => {
-          console.error(err);
-          return of([] as any);
-        })
-      ).subscribe(result => {
-        this.files = result.items.map(x=>`${this.url}/${x.id}?fields=title`);
-        //var x = this.files[0];
-        //this.app.tick();
+      const fileID = "0B0PlDrzQdktcY2FWYmlpZVN5YkE";
+      this.zone.run(()=>{
+        gapi.load("client",() =>{
+          gapi.client.load("drive", "v2").then(() => {
+            gapi.client.drive.children.list({
+              'folderId': "root",
+              'orderBy': 'folder,title'
+            }).execute((resp) => {
+              console.log(resp);
+              this.files = resp.items.map(x=>{
+                return {id: x.id};
+              });
 
-        for (let i = 0; i < this.files.length; i++) {
-          const x = this.files[i];
-
-          this.http.get(x, this.auth.getOptions()).pipe(
-            catchError((err: any) : Observable<any> => {
-              console.error(err);
-              return of([] as any);
-            })
-          ).subscribe(result => {
-            this.files[i] = result.title;
-            this.app.tick();
-          })
-        }
-      })
+              var batch = new gapi.client.newBatch();
+              for(let i = 0; i < this.files.length; i++) {
+                batch.add(gapi.client.drive.files.get({
+                  'fileId': this.files[i].id,
+                  'fields': "title, modifiedDate",
+                }), {
+                  id: String(i),
+                  callback: null
+                })
+              }
+              batch.execute((respMap, raw) =>{
+                console.log(respMap);
+                for(let i = 0; i < this.files.length; i++)
+                {
+                  if(respMap[String(i)].error)
+                  {
+                    this.files[i].name = "Error";
+                    continue;
+                  }
+                  this.files[i].name = respMap[String(i)].result.title;
+                  this.files[i].modifiedDate = respMap[String(i)].result.modifiedDate;
+                }
+                this.app.tick();
+              });
+            });
+          });
+        });
+      });
     } else {
       this.files = [];
     }

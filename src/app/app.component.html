@@ -1,7 +1,7 @@
 <!--The content below is only a placeholder and can be replaced.-->
 <div style="text-align:center">
   <h1>
-    Welcome to {{ title }}!
+    Welcome to Google!
   </h1>
 </div>
 <ul [ngSwitch]="auth.isSignedIn()" class="controls">
@@ -26,8 +26,13 @@
 
 <app-profile></app-profile>
 
-<ul>
-  <li *ngFor="let file of files">
-    {{file}}
-  </li>
-</ul>
+<table>
+  <tr>
+    <td>Name</td>
+    <td>Modified Date</td>
+  </tr>
+  <tr *ngFor="let file of files">
+    <td>{{file.name}}</td>
+    <td>{{file.modifiedDate}}</td>
+  </tr>
+</table>
