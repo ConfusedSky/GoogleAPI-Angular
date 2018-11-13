@@ -1,0 +1,7 @@
+<div id="profile" [@profile]="animate?'visible':'invisible'">
+  <div>
+    <img [src]="img" (load)="imgLoaded()"> <br> 
+    {{name}} <br>
+    {{email}}
+  </div>
+</div>
