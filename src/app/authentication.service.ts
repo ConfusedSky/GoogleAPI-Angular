@@ -1,13 +1,15 @@
-import { Injectable, ApplicationRef } from '@angular/core';
+import { Injectable, ApplicationRef, EventEmitter } from '@angular/core';
 import { GoogleAuthService } from 'ng-gapi';
 
 import GoogleAuth = gapi.auth2.GoogleAuth;
 import { HttpHeaders } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthenticationService {
+
   private signedIn: boolean = false;
   private auth : GoogleAuth = undefined;
 
@@ -20,6 +22,12 @@ export class AuthenticationService {
   getImg() : string { return this.img; }
   getName() : string { return this.name; }
   getEmail() : string { return this.email; }
+
+  private stateChanged : EventEmitter<boolean> = new EventEmitter<boolean>();
+
+  getStateChanged() : Observable<boolean> {
+    return this.stateChanged.asObservable();
+  }
 
   getOptions() : {headers: HttpHeaders} {
     return {
@@ -38,7 +46,7 @@ export class AuthenticationService {
     }
   }
 
-  actualSignIn(value : boolean) {
+  private actualSignIn(value : boolean) {
     if(value)
     {
       this.name = this.auth.currentUser.get().getBasicProfile().getName();
@@ -46,6 +54,7 @@ export class AuthenticationService {
       this.email = this.auth.currentUser.get().getBasicProfile().getEmail();
     }
     this.signedIn = value;
+    this.stateChanged.emit(value);
     this.app.tick();
   }
 

@@ -7,6 +7,7 @@ import {
   animate, 
   transition 
 } from "@angular/animations";
+import { AuthenticationService } from '../authentication.service';
 
 @Component({
   selector: 'app-profile',
@@ -31,41 +32,29 @@ import {
     ])
   ]
 })
-export class ProfileComponent implements OnInit, OnChanges {
-  @Input() img : string = "";
-  @Input() name : string = "";
-  @Input() email : string = "";
-  @Input() visible : boolean = false;
-
+export class ProfileComponent implements OnInit {
+  img : string = "";
+  name : string = "";
+  email : string = "";
   animate : boolean = false;
 
-  loaded : boolean = false;
-
-  firstLoad = true;
-
   imgLoaded() : void {
-    if(this.firstLoad)
-    {
-      this.animate = true;
-    }
-
-    this.loaded = true;
+    this.animate = true;
   }
 
-  constructor() { }
+  constructor(private auth : AuthenticationService) { }
 
   ngOnInit() {
+    this.auth.getStateChanged().subscribe((value) => {
+      if(value){
+        this.img = this.auth.getImg();
+        this.name = this.auth.getName();
+        this.email = this.auth.getEmail();
+      }
+      else{
+        this.animate = false;
+        this.img = ""
+      }
+    });
   }
-
-  ngOnChanges(changes: SimpleChanges) {
-    if(changes.img)
-    {
-      this.loaded = false;
-    }
-    if(changes.loaded || changes.visible)
-    {
-      this.animate = this.visible && this.loaded;
-    }
-  }
-
 }
