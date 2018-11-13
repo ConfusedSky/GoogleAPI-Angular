@@ -9,6 +9,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { clientID } from "./info";
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ProfileComponent } from './profile/profile.component';
+import { DriveBrowserComponent } from './drive-browser/drive-browser.component';
 
 export let gapiClientConfig: NgGapiClientConfig = {
   discoveryDocs: [], 
@@ -23,6 +24,7 @@ export let gapiClientConfig: NgGapiClientConfig = {
   declarations: [
     AppComponent,
     ProfileComponent,
+    DriveBrowserComponent,
   ],
   imports: [
     BrowserModule,

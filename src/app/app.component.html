@@ -4,35 +4,26 @@
     Welcome to Google!
   </h1>
 </div>
-<ul [ngSwitch]="auth.isSignedIn()" class="controls">
+<div [ngSwitch]="auth.isSignedIn()" class="controls">
 
-  <li *ngSwitchCase="false">
+  <div *ngSwitchCase="false">
     <button [disabled]="!auth.isInitialized()" 
             id="signin-button" 
             (click)="auth.signIn()">
       Sign in
     </button>
-  </li>
+  </div>
 
-  <li *ngSwitchCase="true">
+  <div *ngSwitchCase="true">
     <button [disabled]="!auth.isInitialized()" 
             id="signout-button" 
             (click)="auth.signOut()">
       Sign out
     </button>
-  </li>
+  </div>
 
-</ul>
+</div>
 
 <app-profile></app-profile>
 
-<table>
-  <tr>
-    <td>Name</td>
-    <td>Modified Date</td>
-  </tr>
-  <tr *ngFor="let file of files">
-    <td>{{file.name}}</td>
-    <td>{{file.modifiedDate}}</td>
-  </tr>
-</table>
+<app-drive-browser></app-drive-browser>

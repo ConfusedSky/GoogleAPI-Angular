@@ -1,11 +1,4 @@
-.controls li {
+.controls div {
     display: inline;
     margin-right: 5px;
-}
-
-.controls button {
-    padding: 5px 10px;
-    text-decoration: none;
-    background-color: #eee;
-    border-radius: 5px;
 }
