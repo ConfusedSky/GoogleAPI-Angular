@@ -1,0 +1,17 @@
+tr:nth-child(even) {
+    background: #eee;
+}
+
+td, th {
+    max-width: 25em;
+    overflow: hidden;
+    padding: 10px 8px;
+}
+
+th {
+    text-align: left;
+}
+
+table {
+    border-collapse: collapse;
+}

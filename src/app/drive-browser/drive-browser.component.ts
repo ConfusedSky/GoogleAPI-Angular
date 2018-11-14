@@ -21,7 +21,6 @@ export class DriveBrowserComponent implements OnInit {
   }
   generateFiles(signIn : boolean) : void {
     if(signIn) {
-      const fileID = "0B0PlDrzQdktcY2FWYmlpZVN5YkE";
       this.zone.run(()=>{
         gapi.load("client",() =>{
           gapi.client.load("drive", "v2").then(() => {

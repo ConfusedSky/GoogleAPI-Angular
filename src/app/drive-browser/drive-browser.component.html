@@ -1,8 +1,8 @@
+<button (click)="generateFiles(auth.isSignedIn())">Generate Files</button>
 <table *ngIf="auth.isSignedIn()">
-  <button (click)="generateFiles(true)">Generate Files</button>
   <tr>
-    <td>Name</td>
-    <td>Modified Date</td>
+    <th>Name</th>
+    <th>Modified Date</th>
   </tr>
   <tr *ngFor="let file of files">
     <td>{{file.name}}</td>
