@@ -26,14 +26,15 @@ export class DriveBrowserComponent implements OnInit {
           gapi.client.load("drive", "v2").then(() => {
             gapi.client.drive.children.list({
               'folderId': "root",
-              'orderBy': 'folder,title'
+              'orderBy': 'folder,title',
+              'q': 'trashed = false'
             }).execute((resp) => {
               console.log(resp);
               this.files = resp.items.map(x=>{
                 return {id: x.id};
               });
 
-              var batch = new gapi.client.newBatch();
+              var batch = gapi.client.newBatch();
               for(let i = 0; i < this.files.length; i++) {
                 batch.add(gapi.client.drive.files.get({
                   'fileId': this.files[i].id,

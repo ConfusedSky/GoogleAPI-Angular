@@ -1,11 +1,13 @@
-<button (click)="generateFiles(auth.isSignedIn())">Generate Files</button>
-<table *ngIf="auth.isSignedIn()">
-  <tr>
-    <th>Name</th>
-    <th>Modified Date</th>
-  </tr>
-  <tr *ngFor="let file of files">
-    <td>{{file.name}}</td>
-    <td>{{file.modifiedDate}}</td>
-  </tr>
-</table>
+<div *ngIf="auth.isSignedIn()">
+  <button (click)="generateFiles(auth.isSignedIn())">Generate Files</button>
+  <table>
+    <tr>
+      <th>Name</th>
+      <th>Modified Date</th>
+    </tr>
+    <tr *ngFor="let file of files">
+      <td>{{file.name}}</td>
+      <td>{{file.modifiedDate}}</td>
+    </tr>
+  </table>
+</div>
