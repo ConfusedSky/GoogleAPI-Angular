@@ -23,41 +23,43 @@ export class DriveBrowserComponent implements OnInit {
     if(signIn) {
       this.zone.run(()=>{
         gapi.load("client",() =>{
-          gapi.client.load("drive", "v2").then(() => {
-            gapi.client.drive.children.list({
-              'folderId': "root",
-              'orderBy': 'folder,title',
-              'q': 'trashed = false'
-            }).execute((resp) => {
-              console.log(resp);
-              this.files = resp.items.map(x=>{
-                return {id: x.id};
-              });
-
-              var batch = gapi.client.newBatch();
-              for(let i = 0; i < this.files.length; i++) {
-                batch.add(gapi.client.drive.files.get({
-                  'fileId': this.files[i].id,
-                  'fields': "title, modifiedDate",
-                }), {
-                  id: String(i),
-                  callback: null
-                })
+          gapi.client.request(
+            {
+              path: "https://www.googleapis.com/drive/v2/files/root/children",
+              params: {
+                'orderBy': 'folder,title',
+                'q': 'trashed = false'
               }
-              batch.execute((respMap, raw) =>{
-                console.log(respMap);
-                for(let i = 0; i < this.files.length; i++)
+            }
+          ).execute((resp) => {
+            console.log(resp);
+            this.files = resp.items.map(x=>{
+              return {id: x.id};
+            });
+
+            var batch = gapi.client.newBatch();
+            for(let i = 0; i < this.files.length; i++) {
+              batch.add(gapi.client.request({
+                path: `https://www.googleapis.com/drive/v2/files/${this.files[i].id}`,
+                params: {'fields': "title, modifiedDate"},
+              }), {
+                id: String(i),
+                callback: null
+              })
+            }
+            batch.execute((respMap, raw) =>{
+              console.log(respMap);
+              for(let i = 0; i < this.files.length; i++)
+              {
+                if(respMap[String(i)].error)
                 {
-                  if(respMap[String(i)].error)
-                  {
-                    this.files[i].name = "Error";
-                    continue;
-                  }
-                  this.files[i].name = respMap[String(i)].result.title;
-                  this.files[i].modifiedDate = respMap[String(i)].result.modifiedDate;
+                  this.files[i].name = "Error";
+                  continue;
                 }
-                this.app.tick();
-              });
+                this.files[i].name = respMap[String(i)].result.title;
+                this.files[i].modifiedDate = respMap[String(i)].result.modifiedDate;
+              }
+              this.app.tick();
             });
           });
         });
