@@ -10,6 +10,7 @@ import { clientID } from "./info";
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ProfileComponent } from './profile/profile.component';
 import { DriveBrowserComponent } from './drive-browser/drive-browser.component';
+import { TrustAsResourceUrlPipe } from './trust-as-resource-url.pipe';
 
 export let gapiClientConfig: NgGapiClientConfig = {
   discoveryDocs: [], 
@@ -25,6 +26,7 @@ export let gapiClientConfig: NgGapiClientConfig = {
     AppComponent,
     ProfileComponent,
     DriveBrowserComponent,
+    TrustAsResourceUrlPipe,
   ],
   imports: [
     BrowserModule,

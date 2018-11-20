@@ -1,13 +1,25 @@
 <div *ngIf="auth.isSignedIn()">
-  <button (click)="generateFiles(auth.isSignedIn())">Generate Files</button>
-  <table>
-    <tr>
-      <th>Name</th>
-      <th>Modified Date</th>
-    </tr>
-    <tr *ngFor="let file of files">
-      <td>{{file.name}}</td>
-      <td>{{file.modifiedDate}}</td>
-    </tr>
-  </table>
+  <!--<button (click)="folder='root'; generateFiles(auth.isSignedIn())">Generate Files</button>-->
+  <div [ngSwitch]="selectedFile">
+    <table *ngSwitchCase= "undefined">
+      <tr>
+        <th>Name</th>
+        <th>Modified Date</th>
+      </tr>
+      <tr *ngFor="let file of files" 
+          (click)="onSelect(file)"
+          [class.selected]="file === selectedFile">
+        <td>
+          <img src={{file.img}}>
+          {{file.name}}
+        </td>
+        <td>{{file.modifiedDate}}</td>
+      </tr>
+    </table>
+    <div *ngSwitchDefault>
+      <button (click)="handleClick()">Back</button> <br>
+      <!--<div class="document">{{content}}</div>-->
+      <iframe [src]="sanitzeUrl()" frameborder="0"></iframe>
+    </div>
+  </div>
 </div>

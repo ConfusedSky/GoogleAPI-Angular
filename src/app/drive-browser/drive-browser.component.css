@@ -1,17 +1,41 @@
-tr:nth-child(even) {
-    background: #eee;
-}
-
 td, th {
     max-width: 25em;
     overflow: hidden;
     padding: 10px 8px;
+
+    border-bottom: 1px solid #eee;
 }
 
 th {
     text-align: left;
 }
 
+tr {
+    transition: background .5s, color .5s;
+}
+
+tr:hover {
+    background: rgb(240, 240, 240);
+}
+
+tr.selected {
+    background: #E7EFFE;
+    color: #8DB1E9;
+}
+
 table {
     border-collapse: collapse;
+}
+
+.document {
+    display: block;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
+    margin: 8px;
+    width: 85%;
+} 
+
+iframe {
+    width: 100%;
+    height: 720px;
 }

@@ -1,6 +1,10 @@
-import { Component, OnInit, NgZone, ApplicationRef } from '@angular/core';
+import { Component, OnInit, ApplicationRef } from '@angular/core';
 import { AuthenticationService } from '../authentication.service';
 import { File } from '../file';
+import { DriveService } from '../drive.service';
+
+import "rxjs/Rx";
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-drive-browser',
@@ -9,63 +13,66 @@ import { File } from '../file';
 })
 export class DriveBrowserComponent implements OnInit {
   files: File[];
+  selectedFile: File;
+  folder: string = "root";
+  content: string = "about:blank";
 
   constructor(public auth : AuthenticationService,
-              private zone : NgZone,
-              private app : ApplicationRef) { }
+              private app : ApplicationRef,
+              private drive : DriveService,
+              private sanitizer: DomSanitizer) {
+    auth.getStateChanged().subscribe((value)=>{
+      if(!value) this.files=[]
+    })
 
-  //auth.getStateChanged().subscribe((value) => this.generateFiles(value));
-  //this.generateFiles(this.auth.isSignedIn());
+    gapi.load("client",() =>{
+      auth.getStateChanged().subscribe((value) => this.generateFiles(value));
+      this.generateFiles(this.auth.isSignedIn());
+    })
+  }
 
   ngOnInit() {
   }
+
+  handleClick() {
+    this.selectedFile = undefined;
+    this.content = "about:blank";
+    this.app.tick();
+  }
+
+  sanitzeUrl() {
+    return this.sanitizer.bypassSecurityTrustResourceUrl(this.content);
+  }
+
+  onSelect(file: File) {
+    if(this.selectedFile===file.id)
+    {
+    }
+    else
+    {
+      this.selectedFile = file;
+      this.drive.downloadFile(this.selectedFile).then(x => {
+        const blob = new Blob([x], {type: 'text/html'});
+        const url = window.URL.createObjectURL(blob);
+        this.content = url;
+        this.app.tick();
+      }, (reason) => {
+        this.content = reason;
+        this.app.tick();
+      });
+      this.app.tick();
+    }
+  }
+
   generateFiles(signIn : boolean) : void {
     if(signIn) {
-      this.zone.run(()=>{
-        gapi.load("client",() =>{
-          gapi.client.request(
-            {
-              path: "https://www.googleapis.com/drive/v2/files/root/children",
-              params: {
-                'orderBy': 'folder,title',
-                'q': 'trashed = false'
-              }
-            }
-          ).execute((resp) => {
-            console.log(resp);
-            this.files = resp.items.map(x=>{
-              return {id: x.id};
-            });
-
-            var batch = gapi.client.newBatch();
-            for(let i = 0; i < this.files.length; i++) {
-              batch.add(gapi.client.request({
-                path: `https://www.googleapis.com/drive/v2/files/${this.files[i].id}`,
-                params: {'fields': "title, modifiedDate"},
-              }), {
-                id: String(i),
-                callback: null
-              })
-            }
-            batch.execute((respMap, raw) =>{
-              console.log(respMap);
-              for(let i = 0; i < this.files.length; i++)
-              {
-                if(respMap[String(i)].error)
-                {
-                  this.files[i].name = "Error";
-                  continue;
-                }
-                this.files[i].name = respMap[String(i)].result.title;
-                this.files[i].modifiedDate = respMap[String(i)].result.modifiedDate;
-              }
-              this.app.tick();
-            });
-          });
-        });
+      this.drive.getFiles(this.folder).then((x) => {
+        this.files = x
+        this.app.tick();
       });
     } else {
       this.files = [];
+      this.content = "about:blank";
     }
   }
 }
